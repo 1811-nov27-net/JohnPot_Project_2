@@ -1,0 +1,10 @@
+{
+ "filePath": "Orders.xlsx",
+ "URL": "http://training.openspan.com/login",
+ "Username": "2153",
+ "Password": "Vasu@123",
+ "Retry": "2",
+ "CardNumber":"1111222233334444",
+ "CardExpiration":"01/20"
+
+ }
