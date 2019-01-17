@@ -78,25 +78,26 @@
       <Variable x:TypeArguments="x:String" Default="http://training.openspan.com/product/beverages" Name="beverageURL" />
       <Variable x:TypeArguments="x:Boolean" Name="beverageExists" />
       <Variable x:TypeArguments="x:Boolean" Name="quantityExists" />
+      <Variable x:TypeArguments="x:Boolean" Name="orderAdded" />
     </Flowchart.Variables>
     <Flowchart.StartNode>
-      <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_19">
+      <FlowStep x:Name="__ReferenceID6" sap2010:WorkflowViewState.IdRef="FlowStep_19">
         <ui:LogMessage DisplayName="Log Name + Quantity" sap2010:WorkflowViewState.IdRef="LogMessage_9" Level="Info" Message="[&quot;Beverage: &quot; + beverageName + &quot; | Quantity: &quot; + quantity]" />
         <FlowStep.Next>
-          <FlowStep x:Name="__ReferenceID6" sap2010:WorkflowViewState.IdRef="FlowStep_11">
+          <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_11">
             <ui:LogMessage DisplayName="Log beverage URL" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="[&quot;Navigating to beverage page: &quot; + beverageURL]" />
             <FlowStep.Next>
               <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_5">
                 <ui:NavigateTo Browser="[browser]" DisplayName="Navigate To Beverage Page" sap2010:WorkflowViewState.IdRef="NavigateTo_1" Url="[beverageURL]" />
                 <FlowStep.Next>
-                  <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_20">
+                  <FlowStep x:Name="__ReferenceID8" sap2010:WorkflowViewState.IdRef="FlowStep_20">
                     <ui:UiElementExists DisplayName="Find if the beverage by name exsists" Exists="[beverageExists]" sap2010:WorkflowViewState.IdRef="UiElementExists_1">
                       <ui:UiElementExists.Target>
                         <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" Selector="[&quot;&lt;html title='Beverages | Pega Studio Training Web Application' /&gt;&lt;webctrl id='shopping_seasoning_products' tag='TABLE' /&gt;&lt;webctrl aaname='Product ▾' tag='TH' /&gt;&lt;nav up='3' /&gt;&lt;webctrl aaname='&quot;+ beverageName + &quot;' &quot;  + &quot;parentid='shopping_seasoning_products' tag='A' /&gt;&quot;]" TimeoutMS="3000" WaitForReady="INTERACTIVE" />
                       </ui:UiElementExists.Target>
                     </ui:UiElementExists>
                     <FlowStep.Next>
-                      <FlowDecision x:Name="__ReferenceID8" Condition="[beverageExists]" DisplayName="Beverage exists " sap2010:WorkflowViewState.IdRef="FlowDecision_1">
+                      <FlowDecision x:Name="__ReferenceID7" Condition="[beverageExists]" DisplayName="Beverage exists " sap2010:WorkflowViewState.IdRef="FlowDecision_1">
                         <FlowDecision.True>
                           <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_6">
                             <ui:WaitUiElementAppear DisplayName="Find the beverage" FoundElement="[beverageElement]" sap2010:WorkflowViewState.IdRef="WaitUiElementAppear_1" WaitActive="False" WaitVisible="False">
@@ -122,14 +123,14 @@
                                   </ui:Click.Target>
                                 </ui:Click>
                                 <FlowStep.Next>
-                                  <FlowStep x:Name="__ReferenceID14" sap2010:WorkflowViewState.IdRef="FlowStep_25">
+                                  <FlowStep x:Name="__ReferenceID13" sap2010:WorkflowViewState.IdRef="FlowStep_25">
                                     <ui:UiElementExists DisplayName="Find quantity in select list" Exists="[quantityExists]" sap2010:WorkflowViewState.IdRef="UiElementExists_2">
                                       <ui:UiElementExists.Target>
                                         <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="50317c92e7e0307b4e3a5d0740d46f65" Selector="[&quot;&lt;html title='Product Detail | Pega Studio Training Web Application' /&gt;&lt;webctrl id='product_quantity*' tag='SELECT' /&gt;&lt;webctrl aaname='&quot; + quantity + &quot;' tag='OPTION' /&gt;&quot;]" TimeoutMS="3000" WaitForReady="INTERACTIVE" />
                                       </ui:UiElementExists.Target>
                                     </ui:UiElementExists>
                                     <FlowStep.Next>
-                                      <FlowDecision x:Name="__ReferenceID15" Condition="[quantityExists]" DisplayName="Quantity exists" sap2010:WorkflowViewState.IdRef="FlowDecision_2">
+                                      <FlowDecision x:Name="__ReferenceID14" Condition="[quantityExists]" DisplayName="Quantity exists" sap2010:WorkflowViewState.IdRef="FlowDecision_2">
                                         <FlowDecision.True>
                                           <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_8">
                                             <ui:SelectItem ContinueOnError="{x:Null}" DelayAfter="{x:Null}" DelayBefore="{x:Null}" DisplayName="Set quantity" sap2010:WorkflowViewState.IdRef="SelectItem_1" Item="[quantity]">
@@ -162,62 +163,85 @@
                                               </ui:SelectItem.Target>
                                             </ui:SelectItem>
                                             <FlowStep.Next>
-                                              <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_9">
-                                                <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Order'" sap2010:WorkflowViewState.IdRef="Click_6" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                  <ui:Click.CursorPosition>
-                                                    <ui:CursorPosition Position="Center">
-                                                      <ui:CursorPosition.OffsetX>
-                                                        <InArgument x:TypeArguments="x:Int32" />
-                                                      </ui:CursorPosition.OffsetX>
-                                                      <ui:CursorPosition.OffsetY>
-                                                        <InArgument x:TypeArguments="x:Int32" />
-                                                      </ui:CursorPosition.OffsetY>
-                                                    </ui:CursorPosition>
-                                                  </ui:Click.CursorPosition>
-                                                  <ui:Click.Target>
-                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="dee0d07ce9cdb712ba3acc09bf89a321" Selector="&lt;html title='Product Detail | Pega Studio Training Web Application' /&gt;&lt;webctrl id='login_button' tag='INPUT' /&gt;" WaitForReady="INTERACTIVE" />
-                                                  </ui:Click.Target>
-                                                </ui:Click>
+                                              <FlowStep x:Name="__ReferenceID18" sap2010:WorkflowViewState.IdRef="FlowStep_29">
+                                                <ui:UiElementExists DisplayName="Confirm quantity was valid" Exists="[orderAdded]" sap2010:WorkflowViewState.IdRef="UiElementExists_3">
+                                                  <ui:UiElementExists.Target>
+                                                    <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" InformativeScreenshot="d37600b06a8cd2e7c1e1c7a4a098a4aa" Selector="&lt;html title='Order Products | Pega Studio Training Web Application' /&gt;&lt;webctrl aaname='* items added to your cart ' omit:parentid='home_product_confirm' tag='DIV' /&gt;" TimeoutMS="3000" WaitForReady="INTERACTIVE" />
+                                                  </ui:UiElementExists.Target>
+                                                </ui:UiElementExists>
                                                 <FlowStep.Next>
-                                                  <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_10">
-                                                    <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Continue Shopping'" sap2010:WorkflowViewState.IdRef="Click_7" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
-                                                      <ui:Click.CursorPosition>
-                                                        <ui:CursorPosition Position="Center">
-                                                          <ui:CursorPosition.OffsetX>
-                                                            <InArgument x:TypeArguments="x:Int32" />
-                                                          </ui:CursorPosition.OffsetX>
-                                                          <ui:CursorPosition.OffsetY>
-                                                            <InArgument x:TypeArguments="x:Int32" />
-                                                          </ui:CursorPosition.OffsetY>
-                                                        </ui:CursorPosition>
-                                                      </ui:Click.CursorPosition>
-                                                      <ui:Click.Target>
-                                                        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="3d7266151cc1f66e358f4d66e9859bc5" Selector="&lt;html title='Order Products | Pega Studio Training Web Application' /&gt;&lt;webctrl id='login_button' name='continue_shopping' tag='INPUT' /&gt;" WaitForReady="INTERACTIVE" />
-                                                      </ui:Click.Target>
-                                                    </ui:Click>
-                                                    <FlowStep.Next>
-                                                      <FlowStep x:Name="__ReferenceID13" sap2010:WorkflowViewState.IdRef="FlowStep_24">
-                                                        <Assign DisplayName="Update status" sap2010:WorkflowViewState.IdRef="Assign_3">
-                                                          <Assign.To>
-                                                            <OutArgument x:TypeArguments="x:String">[status]</OutArgument>
-                                                          </Assign.To>
-                                                          <Assign.Value>
-                                                            <InArgument x:TypeArguments="x:String">Success</InArgument>
-                                                          </Assign.Value>
-                                                        </Assign>
+                                                  <FlowDecision x:Name="__ReferenceID19" Condition="[orderAdded]" DisplayName="Quantity valid" sap2010:WorkflowViewState.IdRef="FlowDecision_3">
+                                                    <FlowDecision.True>
+                                                      <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_9">
+                                                        <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Order'" sap2010:WorkflowViewState.IdRef="Click_6" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
+                                                          <ui:Click.CursorPosition>
+                                                            <ui:CursorPosition Position="Center">
+                                                              <ui:CursorPosition.OffsetX>
+                                                                <InArgument x:TypeArguments="x:Int32" />
+                                                              </ui:CursorPosition.OffsetX>
+                                                              <ui:CursorPosition.OffsetY>
+                                                                <InArgument x:TypeArguments="x:Int32" />
+                                                              </ui:CursorPosition.OffsetY>
+                                                            </ui:CursorPosition>
+                                                          </ui:Click.CursorPosition>
+                                                          <ui:Click.Target>
+                                                            <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="dee0d07ce9cdb712ba3acc09bf89a321" Selector="&lt;html title='Product Detail | Pega Studio Training Web Application' /&gt;&lt;webctrl id='login_button' tag='INPUT' /&gt;" WaitForReady="INTERACTIVE" />
+                                                          </ui:Click.Target>
+                                                        </ui:Click>
+                                                        <FlowStep.Next>
+                                                          <FlowStep x:Name="__ReferenceID12" sap2010:WorkflowViewState.IdRef="FlowStep_24">
+                                                            <Assign DisplayName="Update status" sap2010:WorkflowViewState.IdRef="Assign_3">
+                                                              <Assign.To>
+                                                                <OutArgument x:TypeArguments="x:String">[status]</OutArgument>
+                                                              </Assign.To>
+                                                              <Assign.Value>
+                                                                <InArgument x:TypeArguments="x:String">Success</InArgument>
+                                                              </Assign.Value>
+                                                            </Assign>
+                                                          </FlowStep>
+                                                        </FlowStep.Next>
                                                       </FlowStep>
-                                                    </FlowStep.Next>
-                                                  </FlowStep>
+                                                    </FlowDecision.True>
+                                                    <FlowDecision.False>
+                                                      <FlowStep x:Name="__ReferenceID22" sap2010:WorkflowViewState.IdRef="FlowStep_32">
+                                                        <ui:LogMessage DisplayName="Order not able to be added" sap2010:WorkflowViewState.IdRef="LogMessage_12" Level="Warn" Message="[&quot;Order was not added to cart&quot;]" />
+                                                        <FlowStep.Next>
+                                                          <FlowStep x:Name="__ReferenceID20" sap2010:WorkflowViewState.IdRef="FlowStep_31">
+                                                            <Assign DisplayName="Update status" sap2010:WorkflowViewState.IdRef="Assign_6">
+                                                              <Assign.To>
+                                                                <OutArgument x:TypeArguments="x:String">[status]</OutArgument>
+                                                              </Assign.To>
+                                                              <Assign.Value>
+                                                                <InArgument x:TypeArguments="x:String">Failed</InArgument>
+                                                              </Assign.Value>
+                                                            </Assign>
+                                                            <FlowStep.Next>
+                                                              <FlowStep x:Name="__ReferenceID21" sap2010:WorkflowViewState.IdRef="FlowStep_30">
+                                                                <Assign DisplayName="Update notes" sap2010:WorkflowViewState.IdRef="Assign_7">
+                                                                  <Assign.To>
+                                                                    <OutArgument x:TypeArguments="x:String">[notes]</OutArgument>
+                                                                  </Assign.To>
+                                                                  <Assign.Value>
+                                                                    <InArgument x:TypeArguments="x:String">["Unable to add '" + beverageName + "' of quantity '" + quantity + "' to the cart."]</InArgument>
+                                                                  </Assign.Value>
+                                                                </Assign>
+                                                              </FlowStep>
+                                                            </FlowStep.Next>
+                                                          </FlowStep>
+                                                        </FlowStep.Next>
+                                                      </FlowStep>
+                                                    </FlowDecision.False>
+                                                  </FlowDecision>
                                                 </FlowStep.Next>
                                               </FlowStep>
                                             </FlowStep.Next>
                                           </FlowStep>
                                         </FlowDecision.True>
                                         <FlowDecision.False>
-                                          <FlowStep x:Name="__ReferenceID18" sap2010:WorkflowViewState.IdRef="FlowStep_28">
+                                          <FlowStep x:Name="__ReferenceID17" sap2010:WorkflowViewState.IdRef="FlowStep_28">
                                             <ui:LogMessage DisplayName="Quantity not available" sap2010:WorkflowViewState.IdRef="LogMessage_11" Level="Warn" Message="[&quot;Quantity not available: &quot; + quantity]" />
                                             <FlowStep.Next>
-                                              <FlowStep x:Name="__ReferenceID17" sap2010:WorkflowViewState.IdRef="FlowStep_27">
+                                              <FlowStep x:Name="__ReferenceID16" sap2010:WorkflowViewState.IdRef="FlowStep_27">
                                                 <Assign DisplayName="Update status" sap2010:WorkflowViewState.IdRef="Assign_4">
                                                   <Assign.To>
                                                     <OutArgument x:TypeArguments="x:String">[status]</OutArgument>
@@ -227,7 +251,7 @@
                                                   </Assign.Value>
                                                 </Assign>
                                                 <FlowStep.Next>
-                                                  <FlowStep x:Name="__ReferenceID16" sap2010:WorkflowViewState.IdRef="FlowStep_26">
+                                                  <FlowStep x:Name="__ReferenceID15" sap2010:WorkflowViewState.IdRef="FlowStep_26">
                                                     <Assign DisplayName="Update notes" sap2010:WorkflowViewState.IdRef="Assign_5">
                                                       <Assign.To>
                                                         <OutArgument x:TypeArguments="x:String">[notes]</OutArgument>
@@ -251,10 +275,10 @@
                           </FlowStep>
                         </FlowDecision.True>
                         <FlowDecision.False>
-                          <FlowStep x:Name="__ReferenceID10" sap2010:WorkflowViewState.IdRef="FlowStep_21">
+                          <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_21">
                             <ui:LogMessage DisplayName="Log could not find beverage element" sap2010:WorkflowViewState.IdRef="LogMessage_10" Level="Warn" Message="[&quot;Could not find beverage: &quot; + beverageName]" />
                             <FlowStep.Next>
-                              <FlowStep x:Name="__ReferenceID11" sap2010:WorkflowViewState.IdRef="FlowStep_23">
+                              <FlowStep x:Name="__ReferenceID10" sap2010:WorkflowViewState.IdRef="FlowStep_23">
                                 <Assign DisplayName="Update status" sap2010:WorkflowViewState.IdRef="Assign_1">
                                   <Assign.To>
                                     <OutArgument x:TypeArguments="x:String">[status]</OutArgument>
@@ -264,7 +288,7 @@
                                   </Assign.Value>
                                 </Assign>
                                 <FlowStep.Next>
-                                  <FlowStep x:Name="__ReferenceID12" sap2010:WorkflowViewState.IdRef="FlowStep_22">
+                                  <FlowStep x:Name="__ReferenceID11" sap2010:WorkflowViewState.IdRef="FlowStep_22">
                                     <Assign DisplayName="Update notes" sap2010:WorkflowViewState.IdRef="Assign_2">
                                       <Assign.To>
                                         <OutArgument x:TypeArguments="x:String">[notes]</OutArgument>
@@ -308,7 +332,11 @@
     <x:Reference>__ReferenceID16</x:Reference>
     <x:Reference>__ReferenceID17</x:Reference>
     <x:Reference>__ReferenceID18</x:Reference>
-    <sads:DebugSymbol.Symbol>dz5DOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcQWRkQmV2ZXJhZ2VUb0NhcnQueGFtbDJLA7gCDwIBAU40TmQCAQJUCVTRAQIBR1cNV70BAgFEWhFaoQECAT9dFWEqAgE5Y0djWQIBN/8BHf8B3gECATSCAiGJAioCATCMAiWTAi4CAStmHWo2AgEmbSF7LAIBI34lggE6AgEdhAFYhAFqAgEb2gEt2gHcAQIBGN0BMeQBOgIBFOcBNe4BPgIBD4cBLaMBPQIBC6YBMbQBPAIBCbcBNcUBQAIBB8gBOc8BQgIBA1R+VM4BAgFIV39XugECAUVajwFangECAUJaKFozAgFAX1pfpwMCAT1fsgNfuAMCATxdY111AgE6/wGjAf8B2wECATWHAkyHAlICATOEAk2EAlUCATGRAlCRAokBAgEujgJRjgJYAgEsZmJmdQIBKWiwAWj9AwIBJ3l7eY4BAgEkgAGjAYAB9gICASGAAYEDgAGHAwIBIH5rfn0CAR7aAaYB2gHZAQIBGeIBXOIBYgIBF98BXd8BZQIBFewBYOwBjwECARLpAWHpAWgCARCHAdMBhwHfAQIBDKEBwAGhAcMCAgEOsgHEAbIBwQICAQrDAcgBwwHeAgIBCM0BZM0BawIBBsoBZcoBbQIBBA==</sads:DebugSymbol.Symbol>
+    <x:Reference>__ReferenceID19</x:Reference>
+    <x:Reference>__ReferenceID20</x:Reference>
+    <x:Reference>__ReferenceID21</x:Reference>
+    <x:Reference>__ReferenceID22</x:Reference>
+    <sads:DebugSymbol.Symbol>dz5DOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcQWRkQmV2ZXJhZ2VUb0NhcnQueGFtbD1LA9QCDwIBAU40TmQCAQJVCVXRAQIBWFgNWL0BAgFVWxFboQECAVBeFWIqAgFKZEdkWQIBSJcCHZcC3gECAUWaAiGhAioCAUGkAiWrAi4CATxnHWs2AgE3biF8LAIBNH8lgwE6AgEuhQFYhQFqAgEs8gEt8gHcAQIBKfUBMfwBOgIBJf8BNYYCPgIBIIgBLaQBPQIBHKcBMasBRgIBF60BZK0BcgIBFc8BOc8B5AECARPSAT3ZAUYCAQ/cAUHjAUoCAQmwATm+AUQCAQfBAT3IAUYCAQNVflXOAQIBWVh/WLoBAgFWW48BW54BAgFTWyhbMwIBUWBaYKcDAgFOYLIDYLgDAgFNXmNedQIBS5cCowGXAtsBAgFGnwJMnwJSAgFEnAJNnAJVAgFCqQJQqQKJAQIBP6YCUaYCWAIBPWdiZ3UCATppsAFp/QMCATh6e3qOAQIBNYEBowGBAfYCAgEygQGBA4EBhwMCATF/a399AgEv8gGmAfIB2QECASr6AVz6AWICASj3AV33AWUCASaEAmCEAo8BAgEjgQJhgQJoAgEhiAHTAYgB3wECAR2iAcABogHDAgIBH6kBrwGpAeICAgEbqQHtAqkB8wICARqnAXWnAYMBAgEYzwG2Ac8B4QECARTXAWjXAW4CARLUAWnUAXECARDhAWzhAcABAgEM3gFt3gF0AgEKvAHMAbwByQICAQjGAWjGAW8CAQbDAWnDAXECAQQ=</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -368,14 +396,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Click_6" sap:VirtualizedContainerService.HintSize="200,52">
+      <sap2010:ViewStateData Id="UiElementExists_3" sap:VirtualizedContainerService.HintSize="200,52">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Click_7" sap:VirtualizedContainerService.HintSize="200,52">
+      <sap2010:ViewStateData Id="Click_6" sap:VirtualizedContainerService.HintSize="200,52">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -392,27 +420,85 @@
       <sap2010:ViewStateData Id="FlowStep_24">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">39,1136.02</av:Point>
+            <av:Point x:Key="ShapeLocation">0,1296.02</av:Point>
             <av:Size x:Key="ShapeSize">242,61.3333333333333</av:Size>
             <av:PointCollection x:Key="ConnectorLocation">770.536666666667,699.02 770.431666666667,699.02 770.431666666667,729.02</av:PointCollection>
-          </scg:Dictionary>
-        </sap:WorkflowViewStateService.ViewState>
-      </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_10">
-        <sap:WorkflowViewStateService.ViewState>
-          <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">60,1054.02</av:Point>
-            <av:Size x:Key="ShapeSize">200,52</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">160,1106.02 160,1136.02</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="FlowStep_9">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">60,974.333333333333</av:Point>
+            <av:Point x:Key="ShapeLocation">20,1204</av:Point>
             <av:Size x:Key="ShapeSize">200,52</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">160,1026.33333333333 160,1054.02</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">120,1256 120,1286 121,1286 121,1296.02</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="LogMessage_12" sap:VirtualizedContainerService.HintSize="200,52">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="242,61.3333333333333">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="242,61.3333333333333">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_30">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">359,1389.33333333333</av:Point>
+            <av:Size x:Key="ShapeSize">242,61.3333333333333</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_31">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">359,1299.33333333333</av:Point>
+            <av:Size x:Key="ShapeSize">242,61.3333333333333</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">480,1360.66666666667 480,1389.33333333333</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_32">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">380,1204</av:Point>
+            <av:Size x:Key="ShapeSize">200,52</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">480,1256 480,1299.33333333333</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowDecision_3" sap:VirtualizedContainerService.HintSize="79.3333333333333,86.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <av:Point x:Key="ShapeLocation">260.641666666667,1138.33333333333</av:Point>
+            <av:Size x:Key="ShapeSize">79.3333333333333,86.6666666666667</av:Size>
+            <av:PointCollection x:Key="TrueConnector">260.641666666667,1181.66666666667 120,1181.66666666667 120,1204</av:PointCollection>
+            <av:PointCollection x:Key="FalseConnector">339.975,1181.66666666667 480,1181.66666666667 480,1204</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_29">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,1054</av:Point>
+            <av:Size x:Key="ShapeSize">200,52</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,1106 300,1136 300.308333333333,1136 300.308333333333,1138.33333333333</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -421,7 +507,7 @@
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <av:Point x:Key="ShapeLocation">60,901.666666666667</av:Point>
             <av:Size x:Key="ShapeSize">200,52</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">160,953.666666666667 160,974.333333333333</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">160,953.666666666667 160,983.666666666667 300,983.666666666667 300,1054</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -604,15 +690,15 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="965.333333333333,1445.33333333333">
+      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="945.333333333333,1647.33333333333">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
             <av:Point x:Key="ShapeLocation">430,10</av:Point>
             <av:Size x:Key="ShapeSize">60,74.6666666666667</av:Size>
             <av:PointCollection x:Key="ConnectorLocation">430,47.3333333333333 260,47.3333333333333 260,106.02</av:PointCollection>
-            <x:Double x:Key="Height">1409.2474240365586</x:Double>
-            <x:Double x:Key="Width">951.53666666666663</x:Double>
+            <x:Double x:Key="Height">1611.3672118701234</x:Double>
+            <x:Double x:Key="Width">931.64972739827158</x:Double>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
