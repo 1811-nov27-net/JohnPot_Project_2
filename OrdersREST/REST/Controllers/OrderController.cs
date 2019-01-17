@@ -29,14 +29,16 @@ namespace REST.Controllers
         }
 
         [HttpGet("{id}")]
-        public Order Get(int id)
+        public OrderView Get(int id)
         {
-            return Repo.OrderRepo.GetById(id);
+            return OrderView.Map(Repo.OrderRepo.GetById(id), Repo);
         }
         [HttpGet]
-        public List<Order> Get()
+        public List<OrderView> Get()
         {
-            return Repo.OrderRepo.GetAll();
+            List<Order> dbOrders = Repo.OrderRepo.GetAll();
+
+            return Repo.OrderRepo.GetAll().Select(o => OrderView.Map(o, Repo)).ToList();
         }
 
         [HttpPut]

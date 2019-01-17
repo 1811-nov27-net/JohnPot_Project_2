@@ -14,7 +14,7 @@ namespace REST.Models
         public string Notes { get; set; }
         public int? OrderNumber { get; set; }
 
-        public static OrderView Map(Order dbOrder)
+        public static OrderView Map(Order dbOrder, Repository repo)
         {
             OrderView vOrder = new OrderView
             {
@@ -24,7 +24,7 @@ namespace REST.Models
                 Status = dbOrder.Status
             };
 
-            //vOrder.ProductName = 
+            vOrder.ProductName = repo.ProductRepo.GetById(dbOrder.ProductId).Name;
 
             return vOrder;
         }
