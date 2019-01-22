@@ -55,9 +55,9 @@ namespace MVC.Controllers
             return RedirectToAction("OrderIndex", "Order");
         }
 
-        public ActionResult SortBy(Order.Sort sortMethod)
+        public ActionResult SortBy(Order.Sort sort)
         {
-            switch(sortMethod)
+            switch(sort)
             {
                 case Order.Sort.Name:
                     {

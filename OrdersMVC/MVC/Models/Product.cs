@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace MVC.Models
 {
     public class Product
     {
+        [DataType(DataType.Currency)]
         public float Price { get; set; }
         public int Inventory { get; set; }
 

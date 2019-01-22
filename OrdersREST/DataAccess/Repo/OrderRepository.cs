@@ -53,12 +53,12 @@ namespace DataAccess.Repo
             var orders = Context.Orders.AsNoTracking().Where(o => o.ProductId == id);
             if(orders.Count() > 1)
             {
-                var order = orders.FirstOrDefault(or => or.Status == Order.OrderStatus.Pending);
+                var order = orders.AsNoTracking().FirstOrDefault(or => or.Status == Order.OrderStatus.Pending);
                 if (order != null)
                     return order;
             }
 
-            return Context.Orders.AsNoTracking().FirstOrDefault(o => o.ProductId == id);
+            return orders.FirstOrDefault();
         }
 
         public void Update(Order entity)
