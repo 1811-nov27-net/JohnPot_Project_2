@@ -1136,11 +1136,11 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "BeverageOrders",
-      "projectName": "BeverageOrders",
-      "projectPath": "C:\\dev\\JohnPot_Project_2\\BeverageOrders\\.local",
+      "projectUniqueName": "BeverageOrders_Advanced",
+      "projectName": "BeverageOrders_Advanced",
+      "projectPath": "C:\\dev\\JohnPot_Project_2\\BeverageOrders_Advanced\\.local",
       "packagesPath": "C:\\Users\\jpot\\.nuget\\packages\\",
-      "outputPath": "C:\\dev\\JohnPot_Project_2\\BeverageOrders\\.local"
+      "outputPath": "C:\\dev\\JohnPot_Project_2\\BeverageOrders_Advanced\\.local"
     },
     "frameworks": {
       "net461": {
