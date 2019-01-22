@@ -1,4 +1,5 @@
-﻿using DataAccess.Models;
+﻿
+using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace DataAccess.Repo
 
         public void Create(Order entity)
         {
+            entity.Id = 0;
             Context.Orders.Add(entity);
             Context.SaveChanges();
         }
@@ -48,6 +50,14 @@ namespace DataAccess.Repo
 
         public Order GetByProductId(int id)
         {
+            var orders = Context.Orders.AsNoTracking().Where(o => o.ProductId == id);
+            if(orders.Count() > 1)
+            {
+                var order = orders.FirstOrDefault(or => or.Status == Order.OrderStatus.Pending);
+                if (order != null)
+                    return order;
+            }
+
             return Context.Orders.AsNoTracking().FirstOrDefault(o => o.ProductId == id);
         }
 

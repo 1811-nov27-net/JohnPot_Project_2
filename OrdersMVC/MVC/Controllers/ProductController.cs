@@ -20,22 +20,22 @@ namespace MVC.Controllers
             Client = client;
             ServiceUri = serviceUri;
         }
-        
+
         public async Task<ActionResult> ProductIndex()
         {
-            HttpResponseMessage response = await Client.GetAsync(new Uri(ServiceUri, "Product"));
-
-            if (!response.IsSuccessStatusCode)
+            if(Product.Models.Count == 0)
             {
-                // TODO: Handle error
+                var init = new Initialize();
+                await init.Sync(Client, ServiceUri);
             }
 
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Product.Models.Clear();
-            List<Product> db_Products = JsonConvert.DeserializeObject<List<Product>>(responseBody);
-            Product.Models = db_Products;
+            return View(Product.Models);
+        }
 
-            return View(db_Products);
+        public async Task<ActionResult> Sync()
+        {
+            await Product.Sync(Client, ServiceUri);
+            return RedirectToAction("ProductIndex", "Index");
         }
         
     }

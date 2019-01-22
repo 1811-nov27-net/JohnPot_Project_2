@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace MVC.Models
@@ -13,7 +15,15 @@ namespace MVC.Models
             Successful,
             Failed
         };
-        
+        public enum Sort
+        {
+            Name,
+            Quantity,
+            Status,
+            Notes,
+            OrderNumber
+        };
+
         public int Quantity { get; set; }
         public OrderStatus Status { get; set; }
         public string Notes { get; set; }
@@ -40,7 +50,40 @@ namespace MVC.Models
             if (name == null)
                 return null;
 
+            var orders = Models.Where(m => m.Name == name);
+
+            // Attempt to return pending orders first. 
+            if (orders.Count() > 1)
+            {
+                var pendingOrder = orders.FirstOrDefault(o => o.Status == Order.OrderStatus.Pending);
+                if (pendingOrder != null)
+                    return pendingOrder;
+
+            }
+
             return Models.FirstOrDefault(m => m.Name == name);
+        }
+        public static List<Order> GetByNumber(int orderNumber)
+        {
+            if (orderNumber == 0)
+                return null;
+
+            return Models.Where(o => o.OrderNumber == orderNumber).ToList();
+        }
+
+        public async static Task Sync(HttpClient client, Uri serviceUri)
+        {
+            HttpResponseMessage response = await client.GetAsync(new Uri(serviceUri, "Order"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO: Handle error
+            }
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Order.Models.Clear();
+            List<Order> db_Orders = JsonConvert.DeserializeObject<List<Order>>(responseBody);
+            Order.Models = db_Orders;
         }
     }
 }

@@ -1,0 +1,47 @@
+﻿@model MVC.Models.Invoice
+
+@{
+    ViewData["Title"] = "InvoiceView";
+}
+
+<h1>Invoice #@Html.Raw(Model.OrderNumber)</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.Raw("Product")
+            </th>
+            <th>
+                @Html.Raw("Quantity")
+            </th>
+            <th>
+                @Html.Raw("Status")
+            </th>
+            <th>
+                @Html.Raw("Notes")
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Orders)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<h3>Total: @Html.Raw(Model.Total)</h3>

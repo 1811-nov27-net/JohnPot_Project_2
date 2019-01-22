@@ -1,25 +1,26 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace MVC.Models
 {
     public class Invoice
     {
-        private List<string> orders = new List<string>();
         public List<Order> Orders
         {
             get
             {
-                List<Order> orderList = new List<Order>();
-                orders.ForEach(o => orderList.Add(Order.GetByName(o) as Order));
-                return orderList;
+                return Order.GetByNumber(OrderNumber);
             }
         }
 
         public int OrderNumber { get; set; }
         public DateTime TimePlaced { get; set; }
+        [DataType(DataType.Currency)]
         public float Total { get; set; }
 
         public static List<Invoice> Models = new List<Invoice>();
@@ -44,6 +45,26 @@ namespace MVC.Models
                 return null;
 
             return Models.FirstOrDefault(m => m.Name == name);
+        }
+        public static Invoice GetByNumber(int number)
+        {
+            return Models.FirstOrDefault(m => m.OrderNumber == number);
+        }
+
+        public async static Task Sync(HttpClient client, Uri serviceUri)
+        {
+
+            HttpResponseMessage response = await client.GetAsync(new Uri(serviceUri, "Invoice"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // TODO: Handle error
+            }
+
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Invoice.Models.Clear();
+            List<Invoice> db_Invoices = JsonConvert.DeserializeObject<List<Invoice>>(responseBody);
+            Invoice.Models = db_Invoices;
         }
     }
 }

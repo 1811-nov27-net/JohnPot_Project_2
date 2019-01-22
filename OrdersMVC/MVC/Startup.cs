@@ -35,9 +35,14 @@ namespace MVC
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddSingleton(new Uri(Configuration.GetValue<string>("ServiceUri")));
+            var uri = new Uri(Configuration.GetValue<string>("ServiceUri"));
+            var client = new HttpClient();
+            //var init = new Initialize();
+            //init.Sync(client, uri);
 
-            services.AddSingleton(new HttpClient());
+            services.AddSingleton(uri);
+
+            services.AddSingleton(client);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

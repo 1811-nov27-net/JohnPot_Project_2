@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,16 @@ namespace DataAccess.Repo
 
         public List<Invoice> GetAll()
         {
-            return Context.Invoices.ToList();
+            foreach (var p in Context.Invoices)
+            {
+                var entity = Context.Entry(p);
+                entity.Reload();
+                entity.State = EntityState.Detached;
+            }
+
+            Context.SaveChanges();
+
+            return Context.Invoices.AsNoTracking().ToList();
         }
 
         public Invoice GetById(int id)

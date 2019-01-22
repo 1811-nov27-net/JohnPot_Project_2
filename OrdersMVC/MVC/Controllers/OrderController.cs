@@ -21,22 +21,9 @@ namespace MVC.Controllers
             ServiceUri = serviceUri;
         }
         
-        public async Task<ActionResult> OrderIndex()
+        public ActionResult OrderIndex()
         {
-            HttpResponseMessage response = await Client.GetAsync(new Uri(ServiceUri, "Order"));
-
-            if (!response.IsSuccessStatusCode)
-            {
-                // TODO: Handle error
-            }
-
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Order.Models.Clear();
-            List<Order> db_Orders = JsonConvert.DeserializeObject<List<Order>>(responseBody);
-            Order.Models = db_Orders;
-
-            return View(db_Orders);
-            
+            return View(Order.Models);
         }
 
         public async Task<ActionResult> AddProduct(int id)
@@ -44,7 +31,7 @@ namespace MVC.Controllers
             Product product = Product.GetById(id) as Product;
             Order order = Order.GetByName(product.Name) as Order;
 
-            if(order == null)
+            if(order == null || order.Status != Order.OrderStatus.Pending)
             {
                 order = new Order()
                 {
@@ -65,6 +52,50 @@ namespace MVC.Controllers
                 HttpResponseMessage response = await Client.PutAsync(new Uri(ServiceUri, "Order"), content);
             }
 
+            return RedirectToAction("OrderIndex", "Order");
+        }
+
+        public ActionResult SortBy(Order.Sort sortMethod)
+        {
+            switch(sortMethod)
+            {
+                case Order.Sort.Name:
+                    {
+                        Order.Models = Order.Models.OrderBy(m => m.Name).ToList();
+                        break;
+                    }
+                case Order.Sort.Quantity:
+                    {
+                        Order.Models = Order.Models.OrderBy(m => m.Quantity).ToList();
+                        break;
+                    }
+                case Order.Sort.Status:
+                    {
+                        Order.Models = Order.Models.OrderBy(m => m.Status).ToList();
+                        break;
+                    }
+                case Order.Sort.Notes:
+                    {
+                        Order.Models = Order.Models.OrderBy(m => m.Notes).ToList();
+                        break;
+                    }
+                case Order.Sort.OrderNumber:
+                    {
+                        Order.Models = Order.Models.OrderBy(m => m.OrderNumber).ToList();
+                        break;
+                    }
+                default:
+                    {
+                        break;
+                    }
+            }
+            return RedirectToAction("OrderIndex", "Order");
+        }
+
+        public async Task<ActionResult> Sync()
+        {
+            await Invoice.Sync(Client, ServiceUri);
+            await Order.Sync(Client, ServiceUri);
             return RedirectToAction("OrderIndex", "Order");
         }
     }

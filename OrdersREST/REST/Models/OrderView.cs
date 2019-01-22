@@ -38,7 +38,10 @@ namespace REST.Models
                 Status = viewOrder.Status
             };
 
-            dbOrder.ProductId = repo.ProductRepo.GetByName(viewOrder.Name).Id;
+
+            var product = repo.ProductRepo.GetByName(viewOrder.Name);
+            if(product != null)
+                dbOrder.ProductId = product.Id;
             
             var order = repo.OrderRepo.GetByProductId(dbOrder.ProductId);
             if (order != null)
