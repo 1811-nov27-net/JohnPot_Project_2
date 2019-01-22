@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,18 +29,33 @@ namespace DataAccess.Repo
 
         public List<Product> GetAll()
         {
-            return Context.Products.ToList();
+            foreach (var p in Context.Products)
+            {
+                var entity = Context.Entry(p);
+                entity.Reload();
+                entity.State = EntityState.Detached;
+            }
+
+            Context.SaveChanges();
+
+            return Context.Products.AsNoTracking().ToList();
         }
 
         public Product GetById(int id)
         {
-            return Context.Products.FirstOrDefault(p => p.Id == id);
+            return Context.Products.AsNoTracking().FirstOrDefault(p => p.Id == id);
+        }
+        
+        public Product GetByName(string name)
+        {
+            return Context.Products.AsNoTracking().FirstOrDefault(p => p.Name == name);
         }
 
         public void Update(Product entity)
         {
-            Context.Products.Update(entity);
+            var p = Context.Products.Update(entity);
             Context.SaveChanges();
+            p.State = EntityState.Detached;
         }
     }
 }

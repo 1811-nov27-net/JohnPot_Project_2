@@ -75,7 +75,7 @@
         </ui:CursorPosition>
       </ui:Hover.CursorPosition>
       <ui:Hover.Target>
-        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="38e86a449cf0d9e88f0eabb175dee3be" Selector="&lt;html title='Order Products | Pega Studio Training Web Application' /&gt;&lt;webctrl id='account' tag='DIV' /&gt;&lt;nav up='6' /&gt;&lt;ctrl name='Settings' role='graphic' /&gt;" WaitForReady="INTERACTIVE" />
+        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="38e86a449cf0d9e88f0eabb175dee3be" Selector="&lt;html title='Beverages | Pega Studio Training Web Application' /&gt;&lt;webctrl parentid='profile_menu' tag='IMG' /&gt;" WaitForReady="INTERACTIVE" />
       </ui:Hover.Target>
     </ui:Hover>
     <ui:Click DelayBefore="{x:Null}" DelayMS="{x:Null}" ClickType="CLICK_SINGLE" DisplayName="Click 'Sign Out'" sap2010:WorkflowViewState.IdRef="Click_1" KeyModifiers="None" MouseButton="BTN_LEFT" SendWindowMessages="False" SimulateClick="False">
@@ -90,16 +90,15 @@
         </ui:CursorPosition>
       </ui:Click.CursorPosition>
       <ui:Click.Target>
-        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="66ba6f539657d0097bc67781f819a56b" Selector="&lt;html title='Order Products | Pega Studio Training Web Application' /&gt;&lt;webctrl aaname='Sign Out' parentid='profile' tag='A' /&gt;" WaitForReady="INTERACTIVE" />
+        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="66ba6f539657d0097bc67781f819a56b" Selector="&lt;html title='Beverages | Pega Studio Training Web Application' /&gt;&lt;webctrl aaname='Sign Out' parentid='profile' tag='A' /&gt;" WaitForReady="INTERACTIVE" />
       </ui:Click.Target>
     </ui:Click>
-    <ui:CloseApplication DisplayName="Close Application 'iexplore.exe Sign'">
+    <ui:CloseApplication DisplayName="Close Application 'iexplore.exe Sign'" sap2010:WorkflowViewState.IdRef="CloseApplication_1">
       <ui:CloseApplication.Target>
         <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d6aec2ee0e3ce6e1141facb5ccefdbc3" Selector="&lt;wnd app='iexplore.exe' cls='IEFrame' title='Sign In | Pega Studio Training Web Application - Internet Explor*' /&gt;" WaitForReady="INTERACTIVE" />
       </ui:CloseApplication.Target>
-      <sap2010:WorkflowViewState.IdRef>CloseApplication_1</sap2010:WorkflowViewState.IdRef>
     </ui:CloseApplication>
-    <sads:DebugSymbol.Symbol>dzRDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcU2lnbk91dC54YW1sB0EDZw4CAQFCBVAQAgEGUQVfEAIBBGAFZRsCAQJOmAFOzwICAQddmAFdpAICAQVimAFikgICAQM=</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>dzRDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcU2lnbk91dC54YW1sB0EDZg4CAQFCBVAQAgEGUQVfEAIBBGAFZBsCAQJOmAFOlAICAQddmAFdnwICAQVimAFikgICAQM=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>

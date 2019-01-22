@@ -31,7 +31,9 @@ namespace MVC.Controllers
             }
 
             string responseBody = await response.Content.ReadAsStringAsync();
+            Product.Models.Clear();
             List<Product> db_Products = JsonConvert.DeserializeObject<List<Product>>(responseBody);
+            Product.Models = db_Products;
 
             return View(db_Products);
         }

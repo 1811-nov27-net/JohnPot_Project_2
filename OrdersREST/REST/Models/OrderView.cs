@@ -8,7 +8,7 @@ namespace REST.Models
 {
     public class OrderView
     {
-        public string ProductName { get; set; }
+        public string Name { get; set; }
         public int Quantity { get; set; }
         public Order.OrderStatus Status { get; set; }
         public string Notes { get; set; }
@@ -24,9 +24,27 @@ namespace REST.Models
                 Status = dbOrder.Status
             };
 
-            vOrder.ProductName = repo.ProductRepo.GetById(dbOrder.ProductId).Name;
+            vOrder.Name = repo.ProductRepo.GetById(dbOrder.ProductId).Name;
 
             return vOrder;
+        }
+        public static Order Map(OrderView viewOrder, Repository repo)
+        {
+            Order dbOrder = new Order
+            {
+                Notes = viewOrder.Notes,
+                OrderNumber = viewOrder.OrderNumber,
+                Quantity = viewOrder.Quantity,
+                Status = viewOrder.Status
+            };
+
+            dbOrder.ProductId = repo.ProductRepo.GetByName(viewOrder.Name).Id;
+            
+            var order = repo.OrderRepo.GetByProductId(dbOrder.ProductId);
+            if (order != null)
+                dbOrder.Id = order.Id;
+
+            return dbOrder;
         }
     }
 }

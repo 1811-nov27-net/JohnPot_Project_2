@@ -23,9 +23,9 @@ namespace REST.Controllers
         }
 
         [HttpPost]
-        public void Post(Order order)
+        public void Post(OrderView order)
         {
-            Repo.OrderRepo.Create(order);
+            Repo.OrderRepo.Create(OrderView.Map(order, Repo));
         }
 
         [HttpGet("{id}")]
@@ -41,10 +41,16 @@ namespace REST.Controllers
             return Repo.OrderRepo.GetAll().Select(o => OrderView.Map(o, Repo)).ToList();
         }
 
+        //[HttpPut]
+        //public void Put(Order order)
+        //{
+        //    Repo.OrderRepo.Update(order);
+        //}
+
         [HttpPut]
-        public void Put(Order order)
+        public void Put(OrderView order)
         {
-            Repo.OrderRepo.Update(order);
+            Repo.OrderRepo.Update(OrderView.Map(order, Repo));
         }
 
     }

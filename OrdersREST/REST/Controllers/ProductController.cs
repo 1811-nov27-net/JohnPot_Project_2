@@ -41,6 +41,12 @@ namespace REST.Controllers
         [HttpPut]
         public void Put(Product product)
         {
+            Product p = Repo.ProductRepo.GetByName(product.Name);
+            if(p != null)
+            {
+                product.Id = p.Id;
+            }
+
             Repo.ProductRepo.Update(product);
         }
 
