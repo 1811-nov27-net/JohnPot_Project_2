@@ -93,22 +93,27 @@
         <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="66ba6f539657d0097bc67781f819a56b" Selector="&lt;html title='Order Products | Pega Studio Training Web Application' /&gt;&lt;webctrl aaname='Sign Out' parentid='profile' tag='A' /&gt;" WaitForReady="INTERACTIVE" />
       </ui:Click.Target>
     </ui:Click>
-    <ui:CloseTab Browser="[browser]" DisplayName="Close IE" sap2010:WorkflowViewState.IdRef="CloseTab_1" />
-    <sads:DebugSymbol.Symbol>dzRDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcU2lnbk91dC54YW1sB0EDYg4CAQFCBVAQAgEHUQVfEAIBBWAFYGwCAQJOmAFOzwICAQhdmAFdpAICAQZgGmAlAgED</sads:DebugSymbol.Symbol>
+    <ui:CloseApplication DisplayName="Close Application 'iexplore.exe Sign'">
+      <ui:CloseApplication.Target>
+        <ui:Target ClippingRegion="{x:Null}" Element="{x:Null}" TimeoutMS="{x:Null}" InformativeScreenshot="d6aec2ee0e3ce6e1141facb5ccefdbc3" Selector="&lt;wnd app='iexplore.exe' cls='IEFrame' title='Sign In | Pega Studio Training Web Application - Internet Explor*' /&gt;" WaitForReady="INTERACTIVE" />
+      </ui:CloseApplication.Target>
+      <sap2010:WorkflowViewState.IdRef>CloseApplication_1</sap2010:WorkflowViewState.IdRef>
+    </ui:CloseApplication>
+    <sads:DebugSymbol.Symbol>dzRDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcU2lnbk91dC54YW1sB0EDZw4CAQFCBVAQAgEGUQVfEAIBBGAFZRsCAQJOmAFOzwICAQddmAFdpAICAQVimAFikgICAQM=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
       <sap2010:ViewStateData Id="Hover_1" sap:VirtualizedContainerService.HintSize="314,106" />
       <sap2010:ViewStateData Id="Click_1" sap:VirtualizedContainerService.HintSize="314,106" />
-      <sap2010:ViewStateData Id="CloseTab_1" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,438">
+      <sap2010:ViewStateData Id="CloseApplication_1" sap:VirtualizedContainerService.HintSize="314,106" />
+      <sap2010:ViewStateData Id="Sequence_1" sap:VirtualizedContainerService.HintSize="336,522">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="SignOut_1" sap:VirtualizedContainerService.HintSize="376,558" />
+      <sap2010:ViewStateData Id="SignOut_1" sap:VirtualizedContainerService.HintSize="376,602" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

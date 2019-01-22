@@ -67,7 +67,6 @@
       <AssemblyReference>UiPath.Excel</AssemblyReference>
       <AssemblyReference>UiPath.Mail</AssemblyReference>
       <AssemblyReference>System.ValueTuple</AssemblyReference>
-      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:WorkflowViewState.IdRef="Sequence_4">
@@ -113,7 +112,7 @@
         </ActivityAction>
       </ui:BrowserScope.Body>
     </ui:BrowserScope>
-    <sads:DebugSymbol.Symbol>dzhDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcTG9naW5Ub1BlZ2EueGFtbBlJA3UOAgEBSgVKkwECASBLBXMXAgECSnJKkAECASFLc0t+AgEeUQtwFgIBA1INUqABAgEbUw1ThwECARZUDVS4AQIBE1UNWRsCAQ9aDVq4AQIBDFsNXxsCAQhgDWCcAQIBBmENbxgCAQRSelKdAQIBHFN9U4QBAgEZUyRTLwIBF1R6VLUBAgEUV6ABV5MCAgESVZwCVagCAgEQWnpatQECAQ1doAFdkwICAQtbnAJbqAICAQlgemCZAQIBB22gAW2WAgIBBQ==</sads:DebugSymbol.Symbol>
+    <sads:DebugSymbol.Symbol>dzhDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcTG9naW5Ub1BlZ2EueGFtbBlIA3QOAgEBSQVJkwECASBKBXIXAgECSXJJkAECASFKc0p+AgEeUAtvFgIBA1ENUaABAgEbUg1ShwECARZTDVO4AQIBE1QNWBsCAQ9ZDVm4AQIBDFoNXhsCAQhfDV+cAQIBBmANbhgCAQRRelGdAQIBHFJ9UoQBAgEZUiRSLwIBF1N6U7UBAgEUVqABVpMCAgESVJwCVKgCAgEQWXpZtQECAQ1coAFckwICAQtanAJaqAICAQlfel+ZAQIBB2ygAWyWAgIBBQ==</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
@@ -141,7 +140,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="LoginToPega_1" sap:VirtualizedContainerService.HintSize="476,1740" />
+      <sap2010:ViewStateData Id="LoginToPega_1" sap:VirtualizedContainerService.HintSize="476,1700" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>

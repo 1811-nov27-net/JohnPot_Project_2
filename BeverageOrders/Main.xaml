@@ -64,6 +64,7 @@
       <AssemblyReference>Newtonsoft.Json</AssemblyReference>
       <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
       <AssemblyReference>UiPath.Studio.Plugin.Workflow</AssemblyReference>
+      <AssemblyReference>System.Collections.Immutable</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Flowchart DisplayName="Process Beverage Orders" sap2010:WorkflowViewState.IdRef="Flowchart_1">
@@ -74,15 +75,22 @@
       <Variable x:TypeArguments="ui:Browser" Name="browser" />
       <Variable x:TypeArguments="sd:DataRow" Name="addressRow" />
       <Variable x:TypeArguments="x:String" Name="orderNumber" />
+      <Variable x:TypeArguments="scg:IEnumerable(ui:QueueItem)" Name="orderQueue" />
+      <Variable x:TypeArguments="ui:QueueItem" Name="transaction" />
     </Flowchart.Variables>
     <Flowchart.StartNode>
-      <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_1">
-        <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Get Configuration Details" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="ReadJsonText.xaml">
-          <ui:InvokeWorkflowFile.Arguments>
-            <InArgument x:TypeArguments="x:String" x:Key="filePath">Config.txt</InArgument>
-            <OutArgument x:TypeArguments="njl:JObject" x:Key="jsonObjectFromText">[configJson]</OutArgument>
-          </ui:InvokeWorkflowFile.Arguments>
-        </ui:InvokeWorkflowFile>
+      <FlowStep x:Name="__ReferenceID10" sap2010:WorkflowViewState.IdRef="FlowStep_25">
+        <Sequence DisplayName="Get Config Details (Assets)" sap2010:WorkflowViewState.IdRef="Sequence_9">
+          <Sequence.Variables>
+            <Variable x:TypeArguments="ui:GenericValue" Name="configAsset" />
+          </Sequence.Variables>
+          <ui:GetRobotAsset TimeoutMS="{x:Null}" AssetName="Config" DisplayName="Get Asset" sap2010:WorkflowViewState.IdRef="GetRobotAsset_1">
+            <ui:GetRobotAsset.Value>
+              <OutArgument x:TypeArguments="ui:GenericValue">[configAsset]</OutArgument>
+            </ui:GetRobotAsset.Value>
+          </ui:GetRobotAsset>
+          <ui:DeserializeJson x:TypeArguments="njl:JObject" DisplayName="Deserialize JSON" sap2010:WorkflowViewState.IdRef="DeserializeJson`1_1" JsonObject="[configJson]" JsonString="[configAsset]" />
+        </Sequence>
         <FlowStep.Next>
           <FlowStep x:Name="__ReferenceID1" sap2010:WorkflowViewState.IdRef="FlowStep_4">
             <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Read Orders" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="ReadExcelSheet.xaml">
@@ -93,145 +101,216 @@
               </ui:InvokeWorkflowFile.Arguments>
             </ui:InvokeWorkflowFile>
             <FlowStep.Next>
-              <FlowStep x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowStep_7">
-                <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Read Address" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_3" UnSafe="False" WorkflowFileName="ReadExcelSheet.xaml">
-                  <ui:InvokeWorkflowFile.Arguments>
-                    <InArgument x:TypeArguments="x:String" x:Key="filePath">[configJson("filePath").ToString]</InArgument>
-                    <InArgument x:TypeArguments="x:String" x:Key="sheetName">Address</InArgument>
-                    <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Dt">[dt_Address]</OutArgument>
-                  </ui:InvokeWorkflowFile.Arguments>
-                </ui:InvokeWorkflowFile>
+              <FlowStep x:Name="__ReferenceID11" sap2010:WorkflowViewState.IdRef="FlowStep_26">
+                <Sequence DisplayName="Add orders to queue and retrieve them" sap2010:WorkflowViewState.IdRef="Sequence_10">
+                  <ui:ForEachRow CurrentIndex="{x:Null}" DataTable="[dt_Orders]" DisplayName="For Each Row" sap2010:WorkflowViewState.IdRef="ForEachRow_2">
+                    <ui:ForEachRow.Body>
+                      <ActivityAction x:TypeArguments="sd:DataRow">
+                        <ActivityAction.Argument>
+                          <DelegateInArgument x:TypeArguments="sd:DataRow" Name="row" />
+                        </ActivityAction.Argument>
+                        <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_11">
+                          <ui:AddQueueItem ServiceBaseAddress="{x:Null}" TimeoutMS="{x:Null}" DisplayName="Add Queue Item" sap2010:WorkflowViewState.IdRef="AddQueueItem_1" Priority="Normal" QueueType="OrderQueue">
+                            <ui:AddQueueItem.ItemInformation>
+                              <InArgument x:TypeArguments="x:String" x:Key="Product">[row("Product").ToString]</InArgument>
+                              <InArgument x:TypeArguments="x:String" x:Key="Quantity">[row("Quantity").ToString]</InArgument>
+                            </ui:AddQueueItem.ItemInformation>
+                          </ui:AddQueueItem>
+                        </Sequence>
+                      </ActivityAction>
+                    </ui:ForEachRow.Body>
+                  </ui:ForEachRow>
+                  <ui:GetQueueItems Duration="{x:Null}" From="{x:Null}" Priority="{x:Null}" Reference="{x:Null}" Skip="{x:Null}" TimeoutMS="{x:Null}" To="{x:Null}" Top="{x:Null}" DisplayName="Get Queue Items" FilterStrategy="StartsWith" sap2010:WorkflowViewState.IdRef="GetQueueItems_1" QueueItemStates="New" QueueName="OrderQueue" Result="[orderQueue]" />
+                </Sequence>
                 <FlowStep.Next>
-                  <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_10">
-                    <ui:OpenBrowser BrowserType="IE" DisplayName="Open Browser" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_1" NewSession="True" Private="False" UiBrowser="[browser]" Url="google.com">
-                      <ui:OpenBrowser.Body>
-                        <ActivityAction x:TypeArguments="x:Object">
-                          <ActivityAction.Argument>
-                            <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
-                          </ActivityAction.Argument>
-                          <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_5" />
-                        </ActivityAction>
-                      </ui:OpenBrowser.Body>
-                    </ui:OpenBrowser>
+                  <FlowStep x:Name="__ReferenceID2" sap2010:WorkflowViewState.IdRef="FlowStep_7">
+                    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Read Address" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_3" UnSafe="False" WorkflowFileName="ReadExcelSheet.xaml">
+                      <ui:InvokeWorkflowFile.Arguments>
+                        <InArgument x:TypeArguments="x:String" x:Key="filePath">[configJson("filePath").ToString]</InArgument>
+                        <InArgument x:TypeArguments="x:String" x:Key="sheetName">Address</InArgument>
+                        <OutArgument x:TypeArguments="sd:DataTable" x:Key="out_Dt">[dt_Address]</OutArgument>
+                      </ui:InvokeWorkflowFile.Arguments>
+                    </ui:InvokeWorkflowFile>
                     <FlowStep.Next>
-                      <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_9">
-                        <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Login to Pega website" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_4" UnSafe="False" WorkflowFileName="LoginToPega.xaml">
-                          <ui:InvokeWorkflowFile.Arguments>
-                            <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
-                            <InArgument x:TypeArguments="x:String" x:Key="url">[configJson("URL").ToString]</InArgument>
-                            <InArgument x:TypeArguments="x:String" x:Key="username">[configJson("Username").ToString]</InArgument>
-                            <InArgument x:TypeArguments="x:String" x:Key="password">[configJson("Password").ToString]</InArgument>
-                          </ui:InvokeWorkflowFile.Arguments>
-                        </ui:InvokeWorkflowFile>
+                      <FlowStep x:Name="__ReferenceID4" sap2010:WorkflowViewState.IdRef="FlowStep_10">
+                        <ui:OpenBrowser BrowserType="IE" DisplayName="Open Browser" Hidden="False" sap2010:WorkflowViewState.IdRef="OpenBrowser_1" NewSession="True" Private="False" UiBrowser="[browser]" Url="google.com">
+                          <ui:OpenBrowser.Body>
+                            <ActivityAction x:TypeArguments="x:Object">
+                              <ActivityAction.Argument>
+                                <DelegateInArgument x:TypeArguments="x:Object" Name="ContextTarget" />
+                              </ActivityAction.Argument>
+                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_5" />
+                            </ActivityAction>
+                          </ui:OpenBrowser.Body>
+                        </ui:OpenBrowser>
                         <FlowStep.Next>
-                          <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_18">
-                            <ui:ForEachRow CurrentIndex="{x:Null}" DataTable="[dt_Orders]" DisplayName="Add each beverage to cart" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
-                              <ui:ForEachRow.Body>
-                                <ActivityAction x:TypeArguments="sd:DataRow">
-                                  <ActivityAction.Argument>
-                                    <DelegateInArgument x:TypeArguments="sd:DataRow" Name="order" />
-                                  </ActivityAction.Argument>
-                                  <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_6">
-                                    <Sequence.Variables>
-                                      <Variable x:TypeArguments="x:String" Name="status" />
-                                      <Variable x:TypeArguments="x:String" Name="notes" />
-                                    </Sequence.Variables>
-                                    <Delay DisplayName="1 Second Delay" Duration="00:00:01" sap2010:WorkflowViewState.IdRef="Delay_3" />
-                                    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Add beverage to cart" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_7" UnSafe="False" WorkflowFileName="AddBeverageToCart.xaml">
-                                      <ui:InvokeWorkflowFile.Arguments>
-                                        <InArgument x:TypeArguments="x:String" x:Key="beverageName">[order("Product").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="quantity">[order("Quantity").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
-                                        <OutArgument x:TypeArguments="x:String" x:Key="status">[status]</OutArgument>
-                                        <OutArgument x:TypeArguments="x:String" x:Key="notes">[notes]</OutArgument>
-                                      </ui:InvokeWorkflowFile.Arguments>
-                                    </ui:InvokeWorkflowFile>
-                                    <Assign DisplayName="Update Status Column" sap2010:WorkflowViewState.IdRef="Assign_1">
-                                      <Assign.To>
-                                        <OutArgument x:TypeArguments="x:Object">[order.Item("Status")]</OutArgument>
-                                      </Assign.To>
-                                      <Assign.Value>
-                                        <InArgument x:TypeArguments="x:Object">[status]</InArgument>
-                                      </Assign.Value>
-                                    </Assign>
-                                    <Assign DisplayName="Update Notes Column" sap2010:WorkflowViewState.IdRef="Assign_2">
-                                      <Assign.To>
-                                        <OutArgument x:TypeArguments="x:Object">[order.Item("Notes")]</OutArgument>
-                                      </Assign.To>
-                                      <Assign.Value>
-                                        <InArgument x:TypeArguments="x:Object">[notes]</InArgument>
-                                      </Assign.Value>
-                                    </Assign>
-                                  </Sequence>
-                                </ActivityAction>
-                              </ui:ForEachRow.Body>
-                            </ui:ForEachRow>
+                          <FlowStep x:Name="__ReferenceID3" sap2010:WorkflowViewState.IdRef="FlowStep_9">
+                            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Login to Pega website" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_4" UnSafe="False" WorkflowFileName="LoginToPega.xaml">
+                              <ui:InvokeWorkflowFile.Arguments>
+                                <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                                <InArgument x:TypeArguments="x:String" x:Key="url">[configJson("URL").ToString]</InArgument>
+                                <InArgument x:TypeArguments="x:String" x:Key="username">[configJson("Username").ToString]</InArgument>
+                                <InArgument x:TypeArguments="x:String" x:Key="password">[configJson("Password").ToString]</InArgument>
+                              </ui:InvokeWorkflowFile.Arguments>
+                            </ui:InvokeWorkflowFile>
                             <FlowStep.Next>
-                              <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_20">
-                                <Assign DisplayName="Get the address row from table" sap2010:WorkflowViewState.IdRef="Assign_3">
-                                  <Assign.To>
-                                    <OutArgument x:TypeArguments="sd:DataRow">[addressRow]</OutArgument>
-                                  </Assign.To>
-                                  <Assign.Value>
-                                    <InArgument x:TypeArguments="sd:DataRow">[dt_Address.Rows(0)]</InArgument>
-                                  </Assign.Value>
-                                </Assign>
+                              <FlowStep x:Name="__ReferenceID0" sap2010:WorkflowViewState.IdRef="FlowStep_29">
+                                <ui:GetQueueItem ContinueOnError="{x:Null}" TimeoutMS="{x:Null}" DisplayName="Get Transaction Item" sap2010:WorkflowViewState.IdRef="GetQueueItem_1" QueueType="OrderQueue" TransactionItem="[transaction]" />
                                 <FlowStep.Next>
-                                  <FlowStep x:Name="__ReferenceID6" sap2010:WorkflowViewState.IdRef="FlowStep_19">
-                                    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Place the order" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_8" UnSafe="False" WorkflowFileName="PlaceOrder.xaml">
-                                      <ui:InvokeWorkflowFile.Arguments>
-                                        <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="firstName">[addressRow("First Name").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="lastName">[addressRow("Last Name").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="address">[addressRow("Street Address").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="zip">[addressRow("ZIP Code").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="areaCode">[addressRow("Area Code").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="phoneNumber">[addressRow("Primary Phone").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="cardType">[configJson("CardType").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="cardSecurity">[configJson("CardSecurity").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="cardNumber">[configJson("CardNumber").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="cardExpirationMonth">[configJson("CardExpirationMonth").ToString]</InArgument>
-                                        <InArgument x:TypeArguments="x:String" x:Key="cardExpirationYear">[configJson("CardExpirationYear").ToString]</InArgument>
-                                        <OutArgument x:TypeArguments="x:String" x:Key="orderNumber">[orderNumber]</OutArgument>
-                                      </ui:InvokeWorkflowFile.Arguments>
-                                    </ui:InvokeWorkflowFile>
-                                    <FlowStep.Next>
-                                      <FlowStep x:Name="__ReferenceID8" sap2010:WorkflowViewState.IdRef="FlowStep_21">
-                                        <ui:LogMessage DisplayName="Log Order Number" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Order Number: &quot; + orderNumber]" />
+                                  <FlowDecision x:Name="__ReferenceID13" Condition="[Not(transaction is  Nothing)]" DisplayName="Transaction found" sap2010:WorkflowViewState.IdRef="FlowDecision_1">
+                                    <FlowDecision.True>
+                                      <FlowStep x:Name="__ReferenceID14" sap2010:WorkflowViewState.IdRef="FlowStep_30">
+                                        <Sequence DisplayName="Add beverage to cart" sap2010:WorkflowViewState.IdRef="Sequence_15">
+                                          <Sequence.Variables>
+                                            <Variable x:TypeArguments="sd:DataRow" Name="row" />
+                                            <Variable x:TypeArguments="x:String" Name="status" />
+                                            <Variable x:TypeArguments="x:String" Name="notes" />
+                                          </Sequence.Variables>
+                                          <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Add beverage to cart" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_11" UnSafe="False" WorkflowFileName="AddBeverageToCart.xaml">
+                                            <ui:InvokeWorkflowFile.Arguments>
+                                              <InArgument x:TypeArguments="x:String" x:Key="beverageName">[transaction.SpecificContent("Product").ToString]</InArgument>
+                                              <InArgument x:TypeArguments="x:String" x:Key="quantity">[transaction.SpecificContent("Quantity").ToString]</InArgument>
+                                              <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                                              <OutArgument x:TypeArguments="x:String" x:Key="status">[status]</OutArgument>
+                                              <OutArgument x:TypeArguments="x:String" x:Key="notes">[notes]</OutArgument>
+                                            </ui:InvokeWorkflowFile.Arguments>
+                                          </ui:InvokeWorkflowFile>
+                                          <Assign sap2010:WorkflowViewState.IdRef="Assign_8">
+                                            <Assign.To>
+                                              <OutArgument x:TypeArguments="sd:DataRow">[row]</OutArgument>
+                                            </Assign.To>
+                                            <Assign.Value>
+                                              <InArgument x:TypeArguments="sd:DataRow">[dt_Orders.Select("Product='"+transaction.SpecificContent("Product").ToString + "'").FirstOrDefault]</InArgument>
+                                            </Assign.Value>
+                                          </Assign>
+                                          <Assign sap2010:WorkflowViewState.IdRef="Assign_9">
+                                            <Assign.To>
+                                              <OutArgument x:TypeArguments="x:Object">[row.Item("Status")]</OutArgument>
+                                            </Assign.To>
+                                            <Assign.Value>
+                                              <InArgument x:TypeArguments="x:Object">[status]</InArgument>
+                                            </Assign.Value>
+                                          </Assign>
+                                          <Assign sap2010:WorkflowViewState.IdRef="Assign_10">
+                                            <Assign.To>
+                                              <OutArgument x:TypeArguments="x:Object">[row.Item("Notes")]</OutArgument>
+                                            </Assign.To>
+                                            <Assign.Value>
+                                              <InArgument x:TypeArguments="x:Object">[notes]</InArgument>
+                                            </Assign.Value>
+                                          </Assign>
+                                        </Sequence>
                                         <FlowStep.Next>
-                                          <FlowStep x:Name="__ReferenceID10" sap2010:WorkflowViewState.IdRef="FlowStep_24">
-                                            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Sign out" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_9" UnSafe="False" WorkflowFileName="SignOut.xaml">
+                                          <x:Reference>__ReferenceID0</x:Reference>
+                                        </FlowStep.Next>
+                                      </FlowStep>
+                                    </FlowDecision.True>
+                                    <FlowDecision.False>
+                                      <FlowStep x:Name="__ReferenceID6" sap2010:WorkflowViewState.IdRef="FlowStep_20">
+                                        <Assign DisplayName="Get the address row from table" sap2010:WorkflowViewState.IdRef="Assign_3">
+                                          <Assign.To>
+                                            <OutArgument x:TypeArguments="sd:DataRow">[addressRow]</OutArgument>
+                                          </Assign.To>
+                                          <Assign.Value>
+                                            <InArgument x:TypeArguments="sd:DataRow">[dt_Address.Rows(0)]</InArgument>
+                                          </Assign.Value>
+                                        </Assign>
+                                        <FlowStep.Next>
+                                          <FlowStep x:Name="__ReferenceID5" sap2010:WorkflowViewState.IdRef="FlowStep_19">
+                                            <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Place the order" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_8" UnSafe="False" WorkflowFileName="PlaceOrder.xaml">
                                               <ui:InvokeWorkflowFile.Arguments>
                                                 <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="firstName">[addressRow("First Name").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="lastName">[addressRow("Last Name").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="address">[addressRow("Street Address").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="zip">[addressRow("ZIP Code").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="areaCode">[addressRow("Area Code").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="phoneNumber">[addressRow("Primary Phone").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="cardType">[configJson("CardType").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="cardSecurity">[configJson("CardSecurity").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="cardNumber">[configJson("CardNumber").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="cardExpirationMonth">[configJson("CardExpirationMonth").ToString]</InArgument>
+                                                <InArgument x:TypeArguments="x:String" x:Key="cardExpirationYear">[configJson("CardExpirationYear").ToString]</InArgument>
+                                                <OutArgument x:TypeArguments="x:String" x:Key="orderNumber">[orderNumber]</OutArgument>
                                               </ui:InvokeWorkflowFile.Arguments>
                                             </ui:InvokeWorkflowFile>
                                             <FlowStep.Next>
-                                              <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_22">
-                                                <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Update excel order sheet" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_1" Visible="False" WorkbookPath="[configJson(&quot;filePath&quot;).ToString]">
-                                                  <ui:ExcelApplicationScope.Body>
-                                                    <ActivityAction x:TypeArguments="ui:WorkbookApplication">
-                                                      <ActivityAction.Argument>
-                                                        <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
-                                                      </ActivityAction.Argument>
-                                                      <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_8">
-                                                        <ui:ExcelWriteRange AddHeaders="True" DataTable="[dt_Orders]" DisplayName="Write Range" sap2010:WorkflowViewState.IdRef="ExcelWriteRange_1" SheetName="Orders">
-                                                          <ui:ExcelWriteRange.StartingCell>
-                                                            <InArgument x:TypeArguments="x:String">
-                                                              <Literal x:TypeArguments="x:String" Value="" />
-                                                            </InArgument>
-                                                          </ui:ExcelWriteRange.StartingCell>
-                                                        </ui:ExcelWriteRange>
-                                                      </Sequence>
-                                                    </ActivityAction>
-                                                  </ui:ExcelApplicationScope.Body>
-                                                </ui:ExcelApplicationScope>
+                                              <FlowStep x:Name="__ReferenceID7" sap2010:WorkflowViewState.IdRef="FlowStep_21">
+                                                <ui:LogMessage DisplayName="Log Order Number" sap2010:WorkflowViewState.IdRef="LogMessage_2" Level="Info" Message="[&quot;Order Number: &quot; + orderNumber]" />
+                                                <FlowStep.Next>
+                                                  <FlowStep x:Name="__ReferenceID9" sap2010:WorkflowViewState.IdRef="FlowStep_24">
+                                                    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Sign out" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_9" UnSafe="False" WorkflowFileName="SignOut.xaml">
+                                                      <ui:InvokeWorkflowFile.Arguments>
+                                                        <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                                                      </ui:InvokeWorkflowFile.Arguments>
+                                                    </ui:InvokeWorkflowFile>
+                                                    <FlowStep.Next>
+                                                      <FlowStep x:Name="__ReferenceID8" sap2010:WorkflowViewState.IdRef="FlowStep_22">
+                                                        <ui:ExcelApplicationScope Password="{x:Null}" DisplayName="Update excel order sheet" sap2010:WorkflowViewState.IdRef="ExcelApplicationScope_1" Visible="False" WorkbookPath="[configJson(&quot;filePath&quot;).ToString]">
+                                                          <ui:ExcelApplicationScope.Body>
+                                                            <ActivityAction x:TypeArguments="ui:WorkbookApplication">
+                                                              <ActivityAction.Argument>
+                                                                <DelegateInArgument x:TypeArguments="ui:WorkbookApplication" Name="ExcelWorkbookScope" />
+                                                              </ActivityAction.Argument>
+                                                              <Sequence DisplayName="Do" sap2010:WorkflowViewState.IdRef="Sequence_8">
+                                                                <ui:ExcelWriteRange AddHeaders="True" DataTable="[dt_Orders]" DisplayName="Write Range" sap2010:WorkflowViewState.IdRef="ExcelWriteRange_1" SheetName="Orders">
+                                                                  <ui:ExcelWriteRange.StartingCell>
+                                                                    <InArgument x:TypeArguments="x:String">
+                                                                      <Literal x:TypeArguments="x:String" Value="" />
+                                                                    </InArgument>
+                                                                  </ui:ExcelWriteRange.StartingCell>
+                                                                </ui:ExcelWriteRange>
+                                                              </Sequence>
+                                                            </ActivityAction>
+                                                          </ui:ExcelApplicationScope.Body>
+                                                        </ui:ExcelApplicationScope>
+                                                        <FlowStep.Next>
+                                                          <FlowStep x:Name="__ReferenceID12" sap2010:WorkflowViewState.IdRef="FlowStep_28">
+                                                            <ui:ForEach x:TypeArguments="ui:QueueItem" CurrentIndex="{x:Null}" DisplayName="Update transactions in Orchestrator" sap2010:WorkflowViewState.IdRef="ForEach`1_3" Values="[orderQueue]">
+                                                              <ui:ForEach.Body>
+                                                                <ActivityAction x:TypeArguments="ui:QueueItem">
+                                                                  <ActivityAction.Argument>
+                                                                    <DelegateInArgument x:TypeArguments="ui:QueueItem" Name="item" />
+                                                                  </ActivityAction.Argument>
+                                                                  <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_14">
+                                                                    <ui:SetTransactionStatus ContinueOnError="{x:Null}" Reason="{x:Null}" ServiceBaseAddress="{x:Null}" TimeoutMS="{x:Null}" DisplayName="Set Transaction Status" ErrorType="Business" sap2010:WorkflowViewState.IdRef="SetTransactionStatus_1" Status="Successful" TransactionItem="[item]">
+                                                                      <ui:SetTransactionStatus.Output>
+                                                                        <scg:Dictionary x:TypeArguments="x:String, InArgument" />
+                                                                      </ui:SetTransactionStatus.Output>
+                                                                    </ui:SetTransactionStatus>
+                                                                  </Sequence>
+                                                                </ActivityAction>
+                                                              </ui:ForEach.Body>
+                                                            </ui:ForEach>
+                                                            <FlowStep.Next>
+                                                              <FlowStep x:Name="__ReferenceID15" sap2010:WorkflowViewState.IdRef="FlowStep_31">
+                                                                <ui:SendMail Bcc="{x:Null}" Cc="{x:Null}" MailMessage="{x:Null}" TimeoutMS="{x:Null}" Body="[&quot;Order number: &quot; + orderNumber. ToString + &quot; | See attachment for details.&quot;]" DisplayName="Send Invoice Email" Email="revaturejohn@gmail.com" EnableSSL="True" From="revaturejohn@gmail.com" sap2010:WorkflowViewState.IdRef="SendMail_1" IsBodyHtml="False" Name="JohnBot" Password="revature_24816" Port="465" SecureConnection="Auto" Server="smtp.gmail.com" Subject="[&quot;Pega Order Invoice: &quot; + orderNumber.ToString]" To="revaturejohn@gmail.com">
+                                                                  <ui:SendMail.Files>
+                                                                    <scg:List x:TypeArguments="InArgument(x:String)" Capacity="4">
+                                                                      <InArgument x:TypeArguments="x:String">Orders.xlsx</InArgument>
+                                                                    </scg:List>
+                                                                  </ui:SendMail.Files>
+                                                                </ui:SendMail>
+                                                                <FlowStep.Next>
+                                                                  <FlowStep x:Name="__ReferenceID16" sap2010:WorkflowViewState.IdRef="FlowStep_32">
+                                                                    <ui:MessageBox Caption="{x:Null}" ChosenButton="{x:Null}" Buttons="Ok" DisplayName="End of automation message" sap2010:WorkflowViewState.IdRef="MessageBox_1" Text="[&quot;Order complete&quot;]" TopMost="True" />
+                                                                  </FlowStep>
+                                                                </FlowStep.Next>
+                                                              </FlowStep>
+                                                            </FlowStep.Next>
+                                                          </FlowStep>
+                                                        </FlowStep.Next>
+                                                      </FlowStep>
+                                                    </FlowStep.Next>
+                                                  </FlowStep>
+                                                </FlowStep.Next>
                                               </FlowStep>
                                             </FlowStep.Next>
                                           </FlowStep>
                                         </FlowStep.Next>
                                       </FlowStep>
-                                    </FlowStep.Next>
-                                  </FlowStep>
+                                    </FlowDecision.False>
+                                  </FlowDecision>
                                 </FlowStep.Next>
                               </FlowStep>
                             </FlowStep.Next>
@@ -247,7 +326,14 @@
         </FlowStep.Next>
       </FlowStep>
     </Flowchart.StartNode>
-    <x:Reference>__ReferenceID0</x:Reference>
+    <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_1">
+      <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Get Configuration Details (.txt)" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="ReadJsonText.xaml">
+        <ui:InvokeWorkflowFile.Arguments>
+          <InArgument x:TypeArguments="x:String" x:Key="filePath">Config.txt</InArgument>
+          <OutArgument x:TypeArguments="njl:JObject" x:Key="jsonObjectFromText">[configJson]</OutArgument>
+        </ui:InvokeWorkflowFile.Arguments>
+      </ui:InvokeWorkflowFile>
+    </FlowStep>
     <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_2">
       <Sequence DisplayName="Display Config Info" sap2010:WorkflowViewState.IdRef="Sequence_1">
         <WriteLine DisplayName="User name" sap2010:WorkflowViewState.IdRef="WriteLine_1" Text="[&quot;User name: &quot; + configJson(&quot;Username&quot;).ToString]" />
@@ -282,17 +368,121 @@
     </FlowStep>
     <x:Reference>__ReferenceID3</x:Reference>
     <x:Reference>__ReferenceID4</x:Reference>
+    <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_18">
+      <ui:ForEachRow CurrentIndex="{x:Null}" DataTable="[dt_Orders]" DisplayName="Add each beverage to cart" sap2010:WorkflowViewState.IdRef="ForEachRow_1">
+        <ui:ForEachRow.Body>
+          <ActivityAction x:TypeArguments="sd:DataRow">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="sd:DataRow" Name="order" />
+            </ActivityAction.Argument>
+            <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_6">
+              <Sequence.Variables>
+                <Variable x:TypeArguments="x:String" Name="status" />
+                <Variable x:TypeArguments="x:String" Name="notes" />
+              </Sequence.Variables>
+              <Delay DisplayName="1 Second Delay" Duration="00:00:01" sap2010:WorkflowViewState.IdRef="Delay_3" />
+              <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Add beverage to cart" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_7" UnSafe="False" WorkflowFileName="AddBeverageToCart.xaml">
+                <ui:InvokeWorkflowFile.Arguments>
+                  <InArgument x:TypeArguments="x:String" x:Key="beverageName">[order("Product").ToString]</InArgument>
+                  <InArgument x:TypeArguments="x:String" x:Key="quantity">[order("Quantity").ToString]</InArgument>
+                  <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                  <OutArgument x:TypeArguments="x:String" x:Key="status">[status]</OutArgument>
+                  <OutArgument x:TypeArguments="x:String" x:Key="notes">[notes]</OutArgument>
+                </ui:InvokeWorkflowFile.Arguments>
+              </ui:InvokeWorkflowFile>
+              <Assign DisplayName="Update Status Column" sap2010:WorkflowViewState.IdRef="Assign_1">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Object">[order.Item("Status")]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Object">[status]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign DisplayName="Update Notes Column" sap2010:WorkflowViewState.IdRef="Assign_2">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Object">[order.Item("Notes")]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Object">[notes]</InArgument>
+                </Assign.Value>
+              </Assign>
+            </Sequence>
+          </ActivityAction>
+        </ui:ForEachRow.Body>
+      </ui:ForEachRow>
+    </FlowStep>
     <x:Reference>__ReferenceID5</x:Reference>
     <x:Reference>__ReferenceID6</x:Reference>
     <x:Reference>__ReferenceID7</x:Reference>
     <x:Reference>__ReferenceID8</x:Reference>
     <x:Reference>__ReferenceID9</x:Reference>
     <x:Reference>__ReferenceID10</x:Reference>
-    <sads:DebugSymbol.Symbol>dzFDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcTWFpbi54YW1sSUUDpAIPAgEBUAlVIQIBVlgNXiUCAVBhEWcpAgFKahVzJgIBRXYZfTECAT6AAR2oAS0CASarASGyASoCASK1ASXFAT0CARHIASnIAcoBAgEOywEtzwFFAgEK0gEx4wFMAgECU1NTXwIBWVJFUk8CAVhQugFQzQECAVdbSltQAgFVXExcVwIBU1pJWmoCAVJYsAFYxQECAVFkTmRVAgFPZVBlXAIBTWNNY24CAUxhtQFhygECAUtqvAFqxwECAUhqzAFq2AECAUdwG3BlAgFGeVB5bAIBRHhWeF8CAUJ7VXt2AgFBelV6dgIBQHbGAXbYAQIBP4ABToABWwIBPIYBI6UBLgIBJ7ABTrABYgIBJa0BT60BWwIBI7gBYrgBhQECASG5AWG5AYMBAgEgwgFrwgGWAQIBH7sBXLsBfQIBHrcBYrcBawIBHL4BYb4BggECARvBAWzBAZgBAgEavwFlvwGKAQIBGcMBZcMBcgIBF8ABY8ABhgECARa9AWS9AYoBAgEVtQHMAbUB3QECARS8AWG8AYMBAgETugFgugGHAQIBEsgBmwHIAccBAgEPzQFqzQFzAgEMywHNAcsB2wECAQvSAd0B0gGKAgIBCdgBN+ABQgIBA4sBJYsBiQECATqMASWUAT0CATCVASWcAS4CASydASWkAS4CASjZATnfAU4CAQSLAVKLAVwCATuSAV+SAWYCATiQAWKQAWsCATaRAWCRAWgCATSPAWGPAX0CATOOAWWOAYABAgEyjAHRAYwB6QECATGaAVCaAVgCAS6XAVGXAWcCAS2iAVCiAVcCASqfAVGfAWYCASncAT/cAW4CAQjZAWnZAXYCAQbZAc8B2QHXAQIBBQ==</sads:DebugSymbol.Symbol>
+    <x:Reference>__ReferenceID11</x:Reference>
+    <FlowStep sap2010:WorkflowViewState.IdRef="FlowStep_27">
+      <ui:ForEach x:TypeArguments="ui:QueueItem" CurrentIndex="{x:Null}" DisplayName="Add beverages to cart (Queue)" sap2010:WorkflowViewState.IdRef="ForEach`1_2" Values="[orderQueue]">
+        <ui:ForEach.Body>
+          <ActivityAction x:TypeArguments="ui:QueueItem">
+            <ActivityAction.Argument>
+              <DelegateInArgument x:TypeArguments="ui:QueueItem" Name="item" />
+            </ActivityAction.Argument>
+            <Sequence DisplayName="Body" sap2010:WorkflowViewState.IdRef="Sequence_12">
+              <Sequence.Variables>
+                <Variable x:TypeArguments="x:String" Name="status" />
+                <Variable x:TypeArguments="x:String" Name="notes" />
+                <Variable x:TypeArguments="ui:GenericValue" Name="itemDictionary" />
+                <Variable x:TypeArguments="sd:DataRow" Name="row" />
+              </Sequence.Variables>
+              <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Add beverage to cart" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_10" UnSafe="False" WorkflowFileName="AddBeverageToCart.xaml">
+                <ui:InvokeWorkflowFile.Arguments>
+                  <InArgument x:TypeArguments="x:String" x:Key="beverageName">[item.SpecificContent("Product").ToString]</InArgument>
+                  <InArgument x:TypeArguments="x:String" x:Key="quantity">[item.SpecificContent("Quantity").ToString]</InArgument>
+                  <InArgument x:TypeArguments="ui:Browser" x:Key="browser">[browser]</InArgument>
+                  <OutArgument x:TypeArguments="x:String" x:Key="status">[status]</OutArgument>
+                  <OutArgument x:TypeArguments="x:String" x:Key="notes">[notes]</OutArgument>
+                </ui:InvokeWorkflowFile.Arguments>
+              </ui:InvokeWorkflowFile>
+              <Assign sap2010:WorkflowViewState.IdRef="Assign_5">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="sd:DataRow">[row]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="sd:DataRow">[dt_Orders.Select("Product='"+item.SpecificContent("Product").ToString + "'").FirstOrDefault]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign sap2010:WorkflowViewState.IdRef="Assign_6">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Object">[row.Item("Status")]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Object">[status]</InArgument>
+                </Assign.Value>
+              </Assign>
+              <Assign sap2010:WorkflowViewState.IdRef="Assign_7">
+                <Assign.To>
+                  <OutArgument x:TypeArguments="x:Object">[row.Item("Notes")]</OutArgument>
+                </Assign.To>
+                <Assign.Value>
+                  <InArgument x:TypeArguments="x:Object">[notes]</InArgument>
+                </Assign.Value>
+              </Assign>
+            </Sequence>
+          </ActivityAction>
+        </ui:ForEach.Body>
+      </ui:ForEach>
+    </FlowStep>
+    <x:Reference>__ReferenceID12</x:Reference>
+    <x:Reference>__ReferenceID0</x:Reference>
+    <x:Reference>__ReferenceID13</x:Reference>
+    <x:Reference>__ReferenceID14</x:Reference>
+    <x:Reference>__ReferenceID15</x:Reference>
+    <x:Reference>__ReferenceID16</x:Reference>
+    <sads:DebugSymbol.Symbol>dzFDOlxkZXZcSm9oblBvdF9Qcm9qZWN0XzJcQmV2ZXJhZ2VPcmRlcnNcTWFpbi54YW1sbEYD4AMPAgEBUwldFAIBe2ANZiUCAXVpEXwcAgFpfxWFAS0CAWOIARmRASoCAV6UAR2bATUCAVeeASGeAe8BAgFToAFUoAF0AgFS0gEp2QEyAgFO3AEt7AFFAgE97wEx7wHSAQIBOvIBNfYBTQIBNvkBOYoCVAIBLo0CPZwCSgIBKJ8CQaUCTwIBG6gCRagCmAICARmjASnKATQCAQJXC1seAwGAAVwLXMkBAgF8Y0pjUAIBemRMZFcCAXhiSWJqAgF3YLABYMUBAgF2ahN6IwIBbXsTe+UCAgFqggFSggFZAgFogwFUgwFgAgFmgQFRgQFyAgFlf7kBf84BAgFkiAHAAYgBywECAWGIAdABiAHcAQIBYI4BH44BaQIBX5cBVJcBcAIBXZYBWpYBYwIBW5kBWZkBegIBWpgBWZgBegIBWZQBygGUAdwBAgFYngHAAZ4BzAECAVaeAd0BngHsAQIBVNcBVtcBagIBUdQBV9QBYwIBT98Bat8BjQECAU3gAWngAYsBAgFM6QFz6QGeAQIBS+IBZOIBhQECAUreAWreAXMCAUjlAWnlAYoBAgFH6AF06AGgAQIBRuYBbeYBkgECAUXqAW3qAXoCAUPnAWvnAY4BAgFC5AFs5AGSAQIBQdwB1AHcAeUBAgFA4wFp4wGLAQIBP+EBaOEBjwECAT7vAaMB7wHPAQIBO/QBcvQBewIBOPIB1QHyAeMBAgE3+QHlAfkBkgICATX/AT+HAkoCAS+NAucBjQL1AQIBLZMCQ5kCTgIBKZ8C2gSfAvIEAgEnogJuogJ5AgEmnwKcAZ8C/wECASSfApsEnwLWBAIBIp8C1gKfAu4CAgEhnwKnAp8CvwICASCfAt0DnwLiAwIBH58CggSfApIEAgEenwLHA58C1wMCAR2fArQDnwK9AwIBHKgC6AGoAoYCAgEaqQErsQFDAgEPsgEruQE0AgELugErwQE0AgEHwgEryQE0AgEDWT5ZSwMBggFXPFdEAwGBAVy3AVzGAQIBf1ydAVyrAQIBfWpEalECAXNwGXckAgFue8ACe8wCAgFse9QCe+ICAgFrgAJBhgJWAgEwlAJFmAJfAgEqrwFlrwFsAgEXrQForQFxAgEVrgFmrgFuAgETrAFnrAGZAQIBEqsBa6sBnAECARGpAdgBqQHwAQIBELcBWLcBvAECAQ60AVm0AV4CAQy/AVa/AV4CAQm8AVe8AWsCAQjHAVbHAV0CAQXEAVfEAWoCAQRxG3YtAgFvgwJHgwJ2AgE0gAJxgAJ+AgEygALXAYAC3wECATGUAtUClALdAgIBK3HJAXHVAQIBcnNWc28CAXF0V3RxAgFw</sads:DebugSymbol.Symbol>
   </Flowchart>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+      <sap2010:ViewStateData Id="GetRobotAsset_1" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="DeserializeJson`1_1" sap:VirtualizedContainerService.HintSize="314,62" />
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -300,6 +490,23 @@
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="AddQueueItem_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_11" sap:VirtualizedContainerService.HintSize="222,146">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEachRow_2" sap:VirtualizedContainerService.HintSize="285.333333333333,297.333333333333" />
+      <sap2010:ViewStateData Id="GetQueueItems_1" sap:VirtualizedContainerService.HintSize="285.333333333333,22" />
+      <sap2010:ViewStateData Id="Sequence_10" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -334,21 +541,30 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="314,22" />
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_7" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
-      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="314,62" />
-      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,62" />
-      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="336,476.666666666667">
+      <sap2010:ViewStateData Id="GetQueueItem_1" sap:VirtualizedContainerService.HintSize="200,22">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="ForEachRow_1" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_11" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
+      <sap2010:ViewStateData Id="Assign_8" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Assign_9" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Assign_10" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Sequence_15" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_30">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">0,684.02</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">100,684.02 100,637.02 200,637.02</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -373,7 +589,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_9" sap:VirtualizedContainerService.HintSize="314,86.6666666666667">
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_9" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -395,11 +611,61 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="SetTransactionStatus_1" sap:VirtualizedContainerService.HintSize="200,22" />
+      <sap2010:ViewStateData Id="Sequence_14" sap:VirtualizedContainerService.HintSize="222,146">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_3" sap:VirtualizedContainerService.HintSize="200,52.6666666666667" />
+      <sap2010:ViewStateData Id="SendMail_1" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="MessageBox_1" sap:VirtualizedContainerService.HintSize="314,58.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_32">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">190,1409.70666666666</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_31">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">190,1307.04</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">290,1359.70666666666 290,1409.70666666666</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_28">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">190,1224.37333333333</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">290,1277.04 290,1307.04</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="FlowStep_22">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <av:Point x:Key="ShapeLocation">190,1142.37333333333</av:Point>
             <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">290,1195.04 290,1224.37333333333</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -433,18 +699,29 @@
       <sap2010:ViewStateData Id="FlowStep_20">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">179,759.353333333333</av:Point>
+            <av:Point x:Key="ShapeLocation">179,789.353333333333</av:Point>
             <av:Size x:Key="ShapeSize">242,62</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,821.353333333333 300,859.353333333333</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">300,850.686666666666 300,859.353333333333</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="FlowStep_18">
+      <sap2010:ViewStateData Id="FlowDecision_1" sap:VirtualizedContainerService.HintSize="100,86.6666666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">200,666.686666666667</av:Point>
-            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,719.353333333333 300,759.353333333333</av:PointCollection>
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+            <av:Point x:Key="ShapeLocation">250.641666666667,658.02</av:Point>
+            <av:Size x:Key="ShapeSize">100,86.6666666666667</av:Size>
+            <av:PointCollection x:Key="TrueConnector">250.641666666667,701.353333333333 220.641666666667,701.353333333333 220.641666666667,710.02 200,710.02</av:PointCollection>
+            <av:PointCollection x:Key="FalseConnector">351.308333333333,701.353333333333 381.308333333333,701.353333333333 381.308333333333,759.353333333333 300,759.353333333333 300,789.353333333333</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_29">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,626.02</av:Point>
+            <av:Size x:Key="ShapeSize">200,22</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,648.02 300,658.02 300.975,658.02</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -453,7 +730,7 @@
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <av:Point x:Key="ShapeLocation">200,564.02</av:Point>
             <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,616.686666666667 300,666.686666666667</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">300,616.02 300,626.02</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -475,21 +752,45 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_26">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,249.833333333333</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,302.5 300,333.666666666667</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="FlowStep_4">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">200,214.02</av:Point>
+            <av:Point x:Key="ShapeLocation">200,177.166666666667</av:Point>
             <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,266.686666666667 300,333.666666666667</av:PointCollection>
+            <av:PointCollection x:Key="ConnectorLocation">300,229.833333333333 300,249.833333333333</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_25">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">200,97.1666666666667</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+            <av:PointCollection x:Key="ConnectorLocation">300,149.833333333333 300,177.166666666667</av:PointCollection>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
       <sap2010:ViewStateData Id="FlowStep_1">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
-            <av:Point x:Key="ShapeLocation">200,97.166666666667</av:Point>
+            <av:Point x:Key="ShapeLocation">420,97.166666666667</av:Point>
             <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,149.833333333334 300,214.02</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
@@ -549,18 +850,65 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="614,1482.66666666667">
+      <sap2010:ViewStateData Id="Delay_3" sap:VirtualizedContainerService.HintSize="314,22" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_7" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
+      <sap2010:ViewStateData Id="Assign_1" sap:VirtualizedContainerService.HintSize="314,62" />
+      <sap2010:ViewStateData Id="Assign_2" sap:VirtualizedContainerService.HintSize="314,62" />
+      <sap2010:ViewStateData Id="Sequence_6" sap:VirtualizedContainerService.HintSize="336,476.666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEachRow_1" sap:VirtualizedContainerService.HintSize="200,52.6666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="FlowStep_18">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">420,666.686666666667</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_10" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
+      <sap2010:ViewStateData Id="Assign_5" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Assign_6" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Assign_7" sap:VirtualizedContainerService.HintSize="314,61.3333333333333" />
+      <sap2010:ViewStateData Id="Sequence_12" sap:VirtualizedContainerService.HintSize="336,514.666666666667">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsExpanded">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="ForEach`1_2" sap:VirtualizedContainerService.HintSize="200,52.6666666666667" />
+      <sap2010:ViewStateData Id="FlowStep_27">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <av:Point x:Key="ShapeLocation">420,686.686666666667</av:Point>
+            <av:Size x:Key="ShapeSize">200,52.6666666666667</av:Size>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Flowchart_1" sap:VirtualizedContainerService.HintSize="674,1498.66666666667">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">False</x:Boolean>
             <av:Point x:Key="ShapeLocation">270,2.5</av:Point>
             <av:Size x:Key="ShapeSize">60,74.6666666666667</av:Size>
-            <av:PointCollection x:Key="ConnectorLocation">300,77.1666666666667 300,97.166666666667</av:PointCollection>
-            <x:Double x:Key="Height">1446.9653333333336</x:Double>
+            <x:Double x:Key="Width">660</x:Double>
+            <x:Double x:Key="Height">1462.3733333333303</x:Double>
+            <av:PointCollection x:Key="ConnectorLocation">300,77.1666666666667 300,97.1666666666667</av:PointCollection>
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Main_1" sap:VirtualizedContainerService.HintSize="804,1102.66666666667" />
+      <sap2010:ViewStateData Id="Main_1" sap:VirtualizedContainerService.HintSize="714,1578.66666666667" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
