@@ -79,9 +79,18 @@ namespace MVC.Controllers
                         Order.Models = Order.Models.OrderBy(m => m.Notes).ToList();
                         break;
                     }
+                case Order.Sort.Time:
+                    {
+                        Order.Models = Order.Models.OrderByDescending(m => 
+                        (m.OrderNumber!=null) ? 
+                            Invoice.GetByNumber((int)m.OrderNumber).TimePlaced : 
+                            DateTime.Now).ToList();
+
+                        break;
+                    }
                 case Order.Sort.OrderNumber:
                     {
-                        Order.Models = Order.Models.OrderBy(m => m.OrderNumber).ToList();
+                        Order.Models = Order.Models.OrderByDescending(m => m.OrderNumber).ToList();
                         break;
                     }
                 default:

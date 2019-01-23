@@ -25,37 +25,48 @@
                 @Html.ActionLink("Notes", "SortBy", new { sort = Order.Sort.Notes })
             </th>
             <th>
+                @Html.ActionLink("Time Placed", "SortBy", new { sort = Order.Sort.Time })
+            </th>
+            <th>
                 @Html.ActionLink("Order Number", "SortBy", new { sort = Order.Sort.OrderNumber })
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Notes)
+                </td>
                 @if (item.OrderNumber == null)
                 {
-                    @Html.Raw("--")
+                    <td>
+                        @Html.Raw("--")
+                    </td>
+                    <td>
+                        @Html.Raw("--")
+                    </td>
                 }
                 else
                 {
-                    @Html.ActionLink(item.OrderNumber.ToString(), "InvoiceView", "Invoice", new { id = Invoice.GetByNumber((int)item.OrderNumber).Id })
+                    <td>
+                        @Html.DisplayFor(modelItem => Invoice.GetByNumber((int)item.OrderNumber).TimePlaced)
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.OrderNumber.ToString(), "InvoiceView", "Invoice", new { id = Invoice.GetByNumber((int)item.OrderNumber).Id })
+                    </td>
                 }
-            </td>
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>

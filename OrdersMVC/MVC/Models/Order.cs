@@ -21,7 +21,8 @@ namespace MVC.Models
             Quantity,
             Status,
             Notes,
-            OrderNumber
+            OrderNumber,
+            Time
         };
 
         public int Quantity { get; set; }
